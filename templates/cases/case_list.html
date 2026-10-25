@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Досиета{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h1>Досиета</h1>
+    <a class="btn" href="{% url 'cases:create' %}">+ Ново досие</a>
+</div>
+
+<nav class="status-tabs">
+    <a href="{% querystring status=None page=None %}" {% if not current_status %}class="active"{% endif %}>Всички</a>
+    {% for value, label in status_choices %}
+    <a href="{% querystring status=value page=None %}" {% if current_status == value %}class="active"{% endif %}>{{ label }}</a>
+    {% endfor %}
+</nav>
+
+<form method="get" class="filter-bar">
+    {% for field in filter_form %}
+    <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Филтрирай</button>
+    {% if request.GET %}<a class="btn btn-ghost" href="{% url 'cases:list' %}">Изчисти</a>{% endif %}
+</form>
+
+<p class="muted">Намерени: {{ page_obj.paginator.count }} досие{{ page_obj.paginator.count|pluralize:",та" }}</p>
+
+{% if cases %}
+<div class="card-grid">
+    {% for case in cases %}
+        {% include 'partials/_case_card.html' %}
+    {% endfor %}
+</div>
+{% include 'partials/_pagination.html' %}
+{% elif request.GET %}
+    {% include 'partials/_empty_state.html' with message='Няма досиета, отговарящи на филтрите.' %}
+{% else %}
+    {% url 'cases:create' as create_url %}
+    {% include 'partials/_empty_state.html' with message='Архивът е празен.' action_url=create_url action_label='Отвори първото досие' %}
+{% endif %}
+{% endblock %}

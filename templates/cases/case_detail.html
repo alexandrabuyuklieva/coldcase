@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ case.case_number }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'cases:list' %}">&larr; Към всички досиета</a></p>
+
+<div class="detail-grid">
+    <article class="case-file">
+        <div class="case-tab">{{ case.case_number }}</div>
+        {% if case.status != 'solved' %}<span class="stamp stamp-large">CLASSIFIED</span>{% endif %}
+        <h1>{{ case.title }}</h1>
+        <p class="case-meta"><span class="badge badge-{{ case.status }}">{{ case.get_status_display }}</span></p>
+
+        <dl class="detail-list">
+            <dt>Дата на престъплението</dt><dd>{{ case.crime_date|date:"d E Y" }}</dd>
+            <dt>Място</dt><dd>{{ case.location }}</dd>
+            <dt>Жертва</dt><dd>{{ case.victim|default:"няма данни" }}</dd>
+            <dt>Открито на</dt><dd>{{ case.created_at|date:"d.m.Y H:i" }}</dd>
+            <dt>Последна промяна</dt><dd>{{ case.updated_at|timesince }} назад</dd>
+        </dl>
+
+        <h2>Обстоятелства</h2>
+        <p>{{ case.description|linebreaksbr }}</p>
+
+        <div class="actions">
+            <a class="btn" href="{% url 'cases:edit' case.pk %}">Редактирай</a>
+            <a class="btn btn-danger" href="{% url 'cases:delete' case.pk %}">Изтрий</a>
+        </div>
+    </article>
+
+    <aside>
+        <section class="panel">
+            <h2>Улики ({{ evidence_list|length }})</h2>
+            {% if evidence_list %}
+            <ul class="item-list">
+                {% for item in evidence_list %}
+                <li>
+                    <strong>{{ item.title }}</strong>
+                    <span class="muted">· {{ item.get_evidence_type_display }} · {{ item.confidence }}%</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">Все още няма събрани улики.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Заподозрени ({{ suspects|length }})</h2>
+            {% if suspects %}
+            <ul class="item-list">
+                {% for suspect in suspects %}
+                <li>{{ suspect.full_name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">Няма заподозрени по случая.</p>
+            {% endif %}
+        </section>
+    </aside>
+</div>
+{% endblock %}

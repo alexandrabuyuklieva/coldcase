@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Редакция на {{ object.case_number }}{% else %}Ново досие{% endif %}{% endblock %}
+
+{% block content %}
+<section class="case-file form-page">
+    <div class="case-tab">{% if object %}{{ object.case_number }}{% else %}НОВО{% endif %}</div>
+    <h1>{% if object %}Редакция на досие{% else %}Откриване на ново досие{% endif %}</h1>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include 'partials/_form.html' %}
+        <div class="form-actions">
+            <button type="submit" class="btn">{% if object %}Запази промените{% else %}Открий досие{% endif %}</button>
+            <a class="btn btn-ghost" href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'cases:list' %}{% endif %}">Отказ</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
