@@ -1,0 +1,14 @@
+<article class="case-file case-card">
+    <div class="case-tab">{{ case.case_number }}</div>
+    {% if case.status != 'solved' %}<span class="stamp">CLASSIFIED</span>{% endif %}
+    <h3><a href="{{ case.get_absolute_url }}">{{ case.title }}</a></h3>
+    <p class="case-meta">
+        <span class="badge badge-{{ case.status }}">{{ case.get_status_display }}</span>
+        {{ case.crime_date|date:"d.m.Y" }} · {{ case.location }}
+    </p>
+    <p class="case-excerpt">{{ case.description|truncatewords:22 }}</p>
+    <p class="case-counts muted">
+        {% if case.evidence_count is not None %}{{ case.evidence_count }} улик{{ case.evidence_count|pluralize:"а,и" }}{% endif %}
+        {% if case.suspects_count is not None %} · {{ case.suspects_count }} заподозр{{ case.suspects_count|pluralize:"ян,ени" }}{% endif %}
+    </p>
+</article>

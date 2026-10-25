@@ -1,0 +1,11 @@
+{% if page_obj.has_other_pages %}
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+    <a class="btn btn-ghost btn-small" href="{% querystring page=page_obj.previous_page_number %}">&larr; Предишна</a>
+    {% endif %}
+    <span class="muted">Страница {{ page_obj.number }} от {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+    <a class="btn btn-ghost btn-small" href="{% querystring page=page_obj.next_page_number %}">Следваща &rarr;</a>
+    {% endif %}
+</nav>
+{% endif %}

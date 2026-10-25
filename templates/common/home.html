@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Начало{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Детективска табла</h1>
+    <p class="muted">Отваряйте досиета, събирайте улики и проследявайте заподозрени, точно като в криминален сериал.</p>
+</section>
+
+<section class="stats">
+    <div class="stat"><span class="stat-value">{{ case_stats.total }}</span><span class="stat-label">досиета</span></div>
+    <div class="stat stat-open"><span class="stat-value">{{ case_stats.open }}</span><span class="stat-label">открити</span></div>
+    <div class="stat stat-solved"><span class="stat-value">{{ case_stats.solved }}</span><span class="stat-label">разкрити</span></div>
+    <div class="stat stat-frozen"><span class="stat-value">{{ case_stats.frozen }}</span><span class="stat-label">замразени</span></div>
+    <div class="stat"><span class="stat-value">{{ suspects_count }}</span><span class="stat-label">заподозрени</span></div>
+    <div class="stat"><span class="stat-value">{{ evidence_count }}</span><span class="stat-label">улики</span></div>
+</section>
+
+<section>
+    <div class="section-header">
+        <h2>Последни открити досиета</h2>
+        <a href="{% url 'cases:list' %}?status=open">Всички открити &rarr;</a>
+    </div>
+    {% if latest_open_cases %}
+    <div class="card-grid">
+        {% for case in latest_open_cases %}
+            {% include 'partials/_case_card.html' %}
+        {% endfor %}
+    </div>
+    {% else %}
+        {% url 'cases:create' as create_url %}
+        {% include 'partials/_empty_state.html' with message='Няма открити досиета. Време е за първото разследване.' action_url=create_url action_label='Отвори досие' %}
+    {% endif %}
+</section>
+{% endblock %}

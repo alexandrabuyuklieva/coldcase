@@ -1,0 +1,13 @@
+<section class="case-file case-file-danger">
+    <span class="stamp stamp-danger">УНИЩОЖАВАНЕ</span>
+    <h1>Потвърдете изтриването</h1>
+    <p>Сигурни ли сте, че искате да изтриете <strong>„{{ object }}“</strong>?</p>
+    {% if warning %}<p class="warning">{{ warning }}</p>{% endif %}
+    <p class="muted">Това действие е необратимо.</p>
+
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Да, изтрий</button>
+        <a href="{{ cancel_url }}" class="btn btn-ghost">Отказ</a>
+    </form>
+</section>
