@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ evidence.title }}{% endblock %}
+
+{% block content %}
+<p><a href="{{ evidence.case.get_absolute_url }}">&larr; Към досие {{ evidence.case.case_number }}</a></p>
+
+<article class="case-file form-page detail-single">
+    <div class="case-tab">УЛИКА</div>
+    <h1>{{ evidence.title }}</h1>
+    <p class="case-meta"><span class="badge">{{ evidence.get_evidence_type_display }}</span></p>
+
+    <dl class="detail-list">
+        <dt>Досие</dt><dd><a href="{{ evidence.case.get_absolute_url }}">{{ evidence.case }}</a></dd>
+        <dt>Открита на</dt><dd>{{ evidence.collected_on|date:"d E Y" }}</dd>
+        <dt>Място</dt><dd>{{ evidence.found_at|default:"няма данни" }}</dd>
+        <dt>Достоверност</dt>
+        <dd>
+            <span class="meter"><span class="meter-fill" style="width: {{ evidence.confidence }}%"></span></span>
+            {{ evidence.confidence }}%
+        </dd>
+        <dt>Уличава</dt>
+        <dd>{% if evidence.implicates %}<a href="{{ evidence.implicates.get_absolute_url }}">{{ evidence.implicates.full_name }}</a>{% else %}никого{% endif %}</dd>
+    </dl>
+
+    {% if evidence.description %}
+    <h2>Описание</h2>
+    <p>{{ evidence.description|linebreaksbr }}</p>
+    {% endif %}
+
+    <div class="actions">
+        <a class="btn" href="{% url 'evidence:edit' evidence.pk %}">Редактирай</a>
+        <a class="btn btn-danger" href="{% url 'evidence:delete' evidence.pk %}">Изтрий</a>
+    </div>
+</article>
+{% endblock %}

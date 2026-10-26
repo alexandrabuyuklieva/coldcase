@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Улики{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h1>Улики</h1>
+    <a class="btn" href="{% url 'evidence:create' %}">+ Нова улика</a>
+</div>
+
+<form method="get" class="filter-bar">
+    {% for field in filter_form %}
+    <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Филтрирай</button>
+    {% if request.GET %}<a class="btn btn-ghost" href="{% url 'evidence:list' %}">Изчисти</a>{% endif %}
+</form>
+
+<p class="muted">Намерени: {{ page_obj.paginator.count }} улик{{ page_obj.paginator.count|pluralize:"а,и" }}</p>
+
+{% if evidence_list %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Улика</th>
+            <th>Вид</th>
+            <th>Досие</th>
+            <th>Открита</th>
+            <th>Достоверност</th>
+            <th>Уличава</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in evidence_list %}
+        <tr>
+            <td><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></td>
+            <td>{{ item.get_evidence_type_display }}</td>
+            <td><a href="{{ item.case.get_absolute_url }}">{{ item.case.case_number }}</a></td>
+            <td>{{ item.collected_on|date:"d.m.Y" }}</td>
+            <td>{{ item.confidence }}%</td>
+            <td>{% if item.implicates %}<a href="{{ item.implicates.get_absolute_url }}">{{ item.implicates.full_name }}</a>{% else %}<span class="muted">никого</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'partials/_pagination.html' %}
+{% elif request.GET %}
+    {% include 'partials/_empty_state.html' with message='Няма улики, отговарящи на филтрите.' %}
+{% else %}
+    {% url 'evidence:create' as create_url %}
+    {% include 'partials/_empty_state.html' with message='Все още няма събрани улики.' action_url=create_url action_label='Добави първата' %}
+{% endif %}
+{% endblock %}
