@@ -116,13 +116,16 @@ class Alibi(TimeStampedModel):
     def _validate_not_contradicting(self):
         if not (self.suspect_id and self.starts_at and self.ends_at and self.location):
             return
-        conflict = (
+        overlapping = (
             Alibi.objects
             .filter(suspect_id=self.suspect_id)
             .exclude(pk=self.pk)
-            .exclude(location__iexact=self.location.strip())
             .filter(starts_at__lt=self.ends_at, ends_at__gt=self.starts_at)
-            .first()
+        )
+        location = self.location.strip().casefold()
+        conflict = next(
+            (alibi for alibi in overlapping if alibi.location.strip().casefold() != location),
+            None,
         )
         if conflict:
             raise ValidationError(

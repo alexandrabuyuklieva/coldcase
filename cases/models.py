@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.urls import reverse
 from django.utils import timezone
 
@@ -14,6 +14,7 @@ class Case(TimeStampedModel):
         FROZEN = 'frozen', 'Замразен'
 
     CASE_NUMBER_PREFIX = 'CC'
+    CASE_NUMBER_ATTEMPTS = 3
 
     case_number = models.CharField(
         max_length=12,
@@ -69,9 +70,16 @@ class Case(TimeStampedModel):
             )
 
     def save(self, *args, **kwargs):
-        if not self.case_number:
+        if self.case_number:
+            return super().save(*args, **kwargs)
+        for _ in range(self.CASE_NUMBER_ATTEMPTS):
             self.case_number = self._generate_case_number()
-        super().save(*args, **kwargs)
+            try:
+                with transaction.atomic():
+                    return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.case_number = ''
+        raise IntegrityError('Не успяхме да генерираме уникален номер на досието.')
 
     @classmethod
     def _generate_case_number(cls):
