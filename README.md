@@ -11,8 +11,8 @@ The interface is in Bulgarian.
 - Case statuses: open, solved, frozen
 - Searching, filtering, sorting and pagination on every list page
 - Suspects can be linked to several cases
-- **Suspicion index** – every suspect gets a score based on how much evidence points to them
-- **Alibi contradiction check** – a suspect can't claim to be in two different places at the same time
+- **Suspicion index** - every suspect gets a score based on how much evidence points to them
+- **Alibi contradiction check** - a suspect can't claim to be in two different places at the same time
 - Evidence can't be dated before the crime and can only implicate suspects linked to the same case
 - A suspect can't be removed from a case while there is evidence against them in it
 - Confirmation page before every delete, with a warning about what else will be removed
@@ -63,18 +63,24 @@ python manage.py test
 
 | Model | App | Relationships |
 | --- | --- | --- |
-| `Case` | `cases` | – |
+| `Case` | `cases` | - |
 | `Suspect` | `suspects` | many-to-many with `Case` |
 | `Alibi` | `suspects` | many-to-one with `Suspect` |
 | `Evidence` | `evidence` | many-to-one with `Case`, many-to-one with `Suspect` (optional) |
 
 All models inherit from the abstract `TimeStampedModel` in `common`, which adds `created_at` and `updated_at`.
 
+Database-level rules:
+
+- an alibi must end after it starts (check constraint)
+- evidence confidence can't be over 100% (check constraint)
+- case numbers are unique, with an index on case status and crime date for the filtered lists
+
 ## Pages
 
 | Page | URL |
 | --- | --- |
-| Home – statistics and latest open cases | `/` |
+| Home - statistics and latest open cases | `/` |
 | Case list, case details, create, edit, delete | `/cases/` |
 | Suspect list, suspect details, create, edit, delete | `/suspects/` |
 | Add, edit and delete alibis | from the suspect details page |
@@ -84,17 +90,17 @@ All pages are reachable from the navigation bar or from links on other pages.
 
 ## Forms and validation
 
-- `CaseForm` – the case number is shown as a disabled field when editing
-- `SuspectForm` – checkbox list of cases, blocks unlinking a case with implicating evidence
-- `AlibiForm` – the suspect is excluded and set from the URL
-- `EvidenceForm` / `EvidenceEditForm` – the case can't be changed after the evidence is created
+- `CaseForm` - the case number is shown as a disabled field when editing
+- `SuspectForm` - checkbox list of cases, blocks unlinking a case with implicating evidence
+- `AlibiForm` - the suspect is excluded and set from the URL
+- `EvidenceForm` / `EvidenceEditForm` - the case can't be changed after the evidence is created
 - Filter forms for the three list pages, built on the shared `SortableFilterForm`
 
 All forms have custom labels, help texts, placeholders and error messages. Validation lives in:
 
-- `common/validators.py` – reusable validators (no future dates, case number format)
-- model `clean()` methods – rules that depend on other objects (alibis, evidence dates)
-- form `clean_<field>()` methods – rules that only make sense in a form
+- `common/validators.py` - reusable validators (no future dates, case number format)
+- model `clean()` methods - rules that depend on other objects (alibis, evidence dates)
+- form `clean_<field>()` methods - rules that only make sense in a form
 
 ## Views
 
@@ -106,11 +112,11 @@ All views are class-based. The list views share `FilteredListMixin` (`common/mix
 - `404.html` and `500.html` error pages
 - Partials in `templates/partials/` for cards, forms, messages, pagination, empty states and delete confirmation
 - Custom template tags and filters in `common/templatetags/coldcase_tags.py`:
-  - `{% active_if %}` – highlights the current section in the navbar
-  - `{% confidence_meter %}` – inclusion tag that draws the evidence confidence bar
-  - `|suspicion_level` – turns the suspicion index into low / medium / high
-  - `|days_since` – how many days have passed since a date
-  - `|initials` – initials of a suspect when there is no photo
+  - `{% active_if %}` - highlights the current section in the navbar
+  - `{% confidence_meter %}` - inclusion tag that draws the evidence confidence bar
+  - `|suspicion_level` - turns the suspicion index into low / medium / high
+  - `|days_since` - how many days have passed since a date
+  - `|initials` - initials of a suspect when there is no photo
 
 ## Project structure
 
