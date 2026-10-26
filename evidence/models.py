@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 
 from common.models import TimeStampedModel
@@ -65,6 +66,13 @@ class Evidence(TimeStampedModel):
         ordering = ['-collected_on', '-created_at']
         verbose_name = 'Улика'
         verbose_name_plural = 'Улики'
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(confidence__lte=100),
+                name='evidence_confidence_max_100',
+                violation_error_message='Достоверността не може да е над 100%.',
+            ),
+        ]
 
     def __str__(self):
         return self.title

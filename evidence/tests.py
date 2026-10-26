@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -38,6 +39,10 @@ class EvidenceTests(TestCase):
 
         with self.assertRaises(ValidationError):
             evidence.full_clean()
+
+    def test_database_rejects_confidence_over_100(self):
+        with self.assertRaises(IntegrityError):
+            Evidence.objects.create(case=self.case, title='Ключ', collected_on=date(2024, 3, 11), confidence=150)
 
     def test_case_is_disabled_when_editing(self):
         evidence = Evidence.objects.create(case=self.case, title='Ключ', collected_on=date(2024, 3, 11))

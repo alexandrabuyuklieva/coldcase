@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Count
+from django.db.models import Count, F, Q
 from django.urls import reverse
 
 from common.models import TimeStampedModel
@@ -97,6 +97,13 @@ class Alibi(TimeStampedModel):
         ordering = ['starts_at']
         verbose_name = 'Алиби'
         verbose_name_plural = 'Алибита'
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(ends_at__gt=F('starts_at')),
+                name='alibi_ends_after_start',
+                violation_error_message='Краят на алибито трябва да е след началото му.',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.suspect} @ {self.location}'

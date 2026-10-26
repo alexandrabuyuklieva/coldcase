@@ -52,6 +52,9 @@ class Case(TimeStampedModel):
 
     class Meta:
         ordering = ['-crime_date', '-created_at']
+        indexes = [
+            models.Index(fields=['status', '-crime_date'], name='case_status_date_idx'),
+        ]
         verbose_name = 'Досие'
         verbose_name_plural = 'Досиета'
 
