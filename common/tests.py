@@ -5,6 +5,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from cases.forms import CaseFilterForm
+from evidence.forms import EvidenceFilterForm
 from common.templatetags.coldcase_tags import days_since, suspicion_level
 
 
@@ -34,3 +36,13 @@ class HomeViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Няма открити досиета')
+
+
+class SortableFilterFormTests(TestCase):
+    def test_default_ordering_is_used_for_unknown_sort(self):
+        form = CaseFilterForm({'sort': 'unknown'})
+
+        self.assertEqual(form.ordering(), CaseFilterForm.SORT_ORDERING['newest'])
+
+    def test_sort_field_is_rendered_last(self):
+        self.assertEqual(list(EvidenceFilterForm().fields)[-1], 'sort')

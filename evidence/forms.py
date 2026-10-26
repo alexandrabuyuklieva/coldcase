@@ -1,6 +1,6 @@
 from django import forms
 
-from common.forms import DisabledFieldsMixin, StyledFormMixin
+from common.forms import DisabledFieldsMixin, SortableFilterForm, StyledFormMixin
 from suspects.models import Suspect
 from .models import Evidence
 
@@ -54,8 +54,6 @@ class EvidenceForm(StyledFormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for name, placeholder in self.placeholders.items():
-            self.fields[name].widget.attrs['placeholder'] = placeholder
         self.fields['implicates'].empty_label = 'Никого'
         if self.instance.case_id:
             self.fields['implicates'].queryset = Suspect.objects.filter(cases=self.instance.case_id)
@@ -65,7 +63,7 @@ class EvidenceEditForm(DisabledFieldsMixin, EvidenceForm):
     disabled_fields = ('case',)
 
 
-class EvidenceFilterForm(StyledFormMixin, forms.Form):
+class EvidenceFilterForm(SortableFilterForm):
     SORT_CHOICES = (
         ('newest', 'Най-скоро открити'),
         ('oldest', 'Най-отдавна открити'),
@@ -76,6 +74,7 @@ class EvidenceFilterForm(StyledFormMixin, forms.Form):
         'oldest': ('collected_on', 'created_at'),
         'confidence': ('-confidence', '-collected_on'),
     }
+    DEFAULT_SORT = 'newest'
 
     q = forms.CharField(
         required=False,
@@ -87,12 +86,3 @@ class EvidenceFilterForm(StyledFormMixin, forms.Form):
         label='Вид',
         choices=(('', 'Всички'), *Evidence.EvidenceType.choices),
     )
-    sort = forms.ChoiceField(
-        required=False,
-        label='Подреждане',
-        choices=SORT_CHOICES,
-    )
-
-    def ordering(self):
-        sort = self.cleaned_data.get('sort') if self.is_valid() else None
-        return self.SORT_ORDERING.get(sort or 'newest')

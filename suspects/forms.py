@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from cases.models import Case
-from common.forms import StyledFormMixin
+from common.forms import SortableFilterForm, StyledFormMixin
 from .models import Alibi, Suspect
 
 
@@ -55,11 +55,6 @@ class SuspectForm(StyledFormMixin, forms.ModelForm):
         'description': 'Висок, с белег над лявата вежда...',
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for name, placeholder in self.placeholders.items():
-            self.fields[name].widget.attrs['placeholder'] = placeholder
-
     def clean_cases(self):
         cases = self.cleaned_data['cases']
         if self.instance.pk:
@@ -78,7 +73,7 @@ class SuspectForm(StyledFormMixin, forms.ModelForm):
         return cases
 
 
-class SuspectFilterForm(StyledFormMixin, forms.Form):
+class SuspectFilterForm(SortableFilterForm):
     SORT_CHOICES = (
         ('suspicion', 'Най-подозрителни'),
         ('name', 'Фамилия (А-Я)'),
@@ -89,6 +84,7 @@ class SuspectFilterForm(StyledFormMixin, forms.Form):
         'name': ('last_name', 'first_name'),
         'newest': ('-created_at',),
     }
+    DEFAULT_SORT = 'suspicion'
 
     q = forms.CharField(
         required=False,
@@ -101,15 +97,6 @@ class SuspectFilterForm(StyledFormMixin, forms.Form):
         queryset=Case.objects.all(),
         empty_label='Всички',
     )
-    sort = forms.ChoiceField(
-        required=False,
-        label='Подреждане',
-        choices=SORT_CHOICES,
-    )
-
-    def ordering(self):
-        sort = self.cleaned_data.get('sort') if self.is_valid() else None
-        return self.SORT_ORDERING.get(sort or 'suspicion')
 
 
 class AlibiForm(StyledFormMixin, forms.ModelForm):
@@ -150,8 +137,3 @@ class AlibiForm(StyledFormMixin, forms.ModelForm):
         'location': 'кв. Лозенец, ресторант „Мрежата“',
         'witness': 'Сервитьорката Мария',
     }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for name, placeholder in self.placeholders.items():
-            self.fields[name].widget.attrs['placeholder'] = placeholder

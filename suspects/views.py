@@ -4,41 +4,30 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
+from common.mixins import FilteredListMixin
 from .forms import AlibiForm, SuspectFilterForm, SuspectForm
 from .models import Alibi, Suspect
 
 
-class SuspectListView(ListView):
-    model = Suspect
+class SuspectListView(FilteredListMixin, ListView):
+    queryset = Suspect.objects.with_suspicion()
+    filter_form_class = SuspectFilterForm
     template_name = 'suspects/suspect_list.html'
     context_object_name = 'suspects'
     paginate_by = 8
 
-    def get_filter_form(self):
-        if not hasattr(self, '_filter_form'):
-            self._filter_form = SuspectFilterForm(self.request.GET or None)
-        return self._filter_form
-
-    def get_queryset(self):
-        queryset = Suspect.objects.with_suspicion()
-        form = self.get_filter_form()
-        if form.is_valid():
-            query = form.cleaned_data['q']
-            case = form.cleaned_data['case']
-            if query:
-                queryset = queryset.filter(
-                    Q(first_name__icontains=query)
-                    | Q(last_name__icontains=query)
-                    | Q(alias__icontains=query)
-                )
-            if case:
-                queryset = queryset.filter(cases=case)
-        return queryset.order_by(*form.ordering())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filter_form'] = self.get_filter_form()
-        return context
+    def filter_queryset(self, queryset, filters):
+        query = filters['q']
+        case = filters['case']
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query)
+                | Q(last_name__icontains=query)
+                | Q(alias__icontains=query)
+            )
+        if case:
+            queryset = queryset.filter(cases=case)
+        return queryset
 
 
 class SuspectDetailView(DetailView):

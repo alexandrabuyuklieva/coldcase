@@ -3,45 +3,38 @@ from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
+from common.mixins import FilteredListMixin
 from .forms import CaseFilterForm, CaseForm
 from .models import Case
 
 
-class CaseListView(ListView):
-    model = Case
+class CaseListView(FilteredListMixin, ListView):
+    queryset = Case.objects.annotate(
+        evidence_count=Count('evidence', distinct=True),
+        suspects_count=Count('suspects', distinct=True),
+    )
+    filter_form_class = CaseFilterForm
     template_name = 'cases/case_list.html'
     context_object_name = 'cases'
     paginate_by = 6
 
-    def get_filter_form(self):
-        if not hasattr(self, '_filter_form'):
-            self._filter_form = CaseFilterForm(self.request.GET or None)
-        return self._filter_form
-
-    def get_queryset(self):
-        queryset = super().get_queryset().annotate(
-            evidence_count=Count('evidence', distinct=True),
-            suspects_count=Count('suspects', distinct=True),
-        )
-        form = self.get_filter_form()
-        if form.is_valid():
-            query = form.cleaned_data['q']
-            status = form.cleaned_data['status']
-            if query:
-                queryset = queryset.filter(
-                    Q(title__icontains=query)
-                    | Q(case_number__icontains=query)
-                    | Q(location__icontains=query)
-                    | Q(victim__icontains=query)
-                )
-            if status:
-                queryset = queryset.filter(status=status)
-        return queryset.order_by(*form.ordering())
+    def filter_queryset(self, queryset, filters):
+        query = filters['q']
+        status = filters['status']
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query)
+                | Q(case_number__icontains=query)
+                | Q(location__icontains=query)
+                | Q(victim__icontains=query)
+            )
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        form = self.get_filter_form()
-        context['filter_form'] = form
+        form = context['filter_form']
         context['current_status'] = form.cleaned_data.get('status', '') if form.is_valid() else ''
         context['status_choices'] = Case.Status.choices
         return context

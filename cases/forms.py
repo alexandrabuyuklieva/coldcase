@@ -1,6 +1,6 @@
 from django import forms
 
-from common.forms import StyledFormMixin
+from common.forms import SortableFilterForm, StyledFormMixin
 from .models import Case
 
 
@@ -52,10 +52,6 @@ class CaseForm(StyledFormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        for name, placeholder in self.placeholders.items():
-            self.fields[name].widget.attrs['placeholder'] = placeholder
-
         if self.instance.pk:
             self._add_read_only_case_number()
 
@@ -71,7 +67,7 @@ class CaseForm(StyledFormMixin, forms.ModelForm):
         self.order_fields(['case_number', *self.Meta.labels])
 
 
-class CaseFilterForm(StyledFormMixin, forms.Form):
+class CaseFilterForm(SortableFilterForm):
     SORT_CHOICES = (
         ('newest', 'Най-нови престъпления'),
         ('oldest', 'Най-стари престъпления'),
@@ -84,6 +80,7 @@ class CaseFilterForm(StyledFormMixin, forms.Form):
         'title': ('title',),
         'evidence': ('-evidence_count', '-crime_date'),
     }
+    DEFAULT_SORT = 'newest'
 
     q = forms.CharField(
         required=False,
@@ -95,12 +92,3 @@ class CaseFilterForm(StyledFormMixin, forms.Form):
         label='Статус',
         choices=(('', 'Всички'), *Case.Status.choices),
     )
-    sort = forms.ChoiceField(
-        required=False,
-        label='Подреждане',
-        choices=SORT_CHOICES,
-    )
-
-    def ordering(self):
-        sort = self.cleaned_data.get('sort') if self.is_valid() else None
-        return self.SORT_ORDERING.get(sort or 'newest')

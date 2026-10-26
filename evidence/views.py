@@ -1,44 +1,32 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from cases.models import Case
+from common.mixins import FilteredListMixin
 from .forms import EvidenceEditForm, EvidenceFilterForm, EvidenceForm
 from .models import Evidence
 
 
-class EvidenceListView(ListView):
-    model = Evidence
+class EvidenceListView(FilteredListMixin, ListView):
+    queryset = Evidence.objects.select_related('case', 'implicates')
+    filter_form_class = EvidenceFilterForm
     template_name = 'evidence/evidence_list.html'
     context_object_name = 'evidence_list'
     paginate_by = 10
 
-    def get_filter_form(self):
-        if not hasattr(self, '_filter_form'):
-            self._filter_form = EvidenceFilterForm(self.request.GET or None)
-        return self._filter_form
-
-    def get_queryset(self):
-        queryset = super().get_queryset().select_related('case', 'implicates')
-        form = self.get_filter_form()
-        if form.is_valid():
-            query = form.cleaned_data['q']
-            evidence_type = form.cleaned_data['evidence_type']
-            if query:
-                queryset = queryset.filter(
-                    Q(title__icontains=query)
-                    | Q(found_at__icontains=query)
-                    | Q(description__icontains=query)
-                )
-            if evidence_type:
-                queryset = queryset.filter(evidence_type=evidence_type)
-        return queryset.order_by(*form.ordering())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filter_form'] = self.get_filter_form()
-        return context
+    def filter_queryset(self, queryset, filters):
+        query = filters['q']
+        evidence_type = filters['evidence_type']
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query)
+                | Q(found_at__icontains=query)
+                | Q(description__icontains=query)
+            )
+        if evidence_type:
+            queryset = queryset.filter(evidence_type=evidence_type)
+        return queryset
 
 
 class EvidenceDetailView(DetailView):
@@ -62,6 +50,11 @@ class EvidenceCreateView(SuccessMessageMixin, CreateView):
         if case_pk and case_pk.isdigit():
             initial['case'] = Case.objects.filter(pk=case_pk).first()
         return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['has_cases'] = Case.objects.exists()
+        return context
 
 
 class EvidenceUpdateView(SuccessMessageMixin, UpdateView):
