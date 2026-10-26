@@ -1,0 +1,13 @@
+<article class="suspect-card">
+    {% if suspect.photo_url %}
+    <img class="avatar" src="{{ suspect.photo_url }}" alt="{{ suspect.full_name }}">
+    {% else %}
+    <span class="avatar avatar-initials">{{ suspect.first_name|first }}{{ suspect.last_name|first }}</span>
+    {% endif %}
+    <div>
+        <h3><a href="{{ suspect.get_absolute_url }}">{{ suspect.full_name }}</a></h3>
+        <p class="suspicion{% if suspect.suspicion_index %} suspicion-high{% endif %}">
+            Индекс на подозрение: <strong>{{ suspect.suspicion_index }}</strong>
+        </p>
+    </div>
+</article>

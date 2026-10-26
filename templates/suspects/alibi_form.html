@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Редакция на алиби{% else %}Ново алиби{% endif %}{% endblock %}
+
+{% block content %}
+<section class="case-file form-page">
+    <div class="case-tab">АЛИБИ</div>
+    <h1>{% if object %}Редакция на алиби{% else %}Ново алиби{% endif %}</h1>
+    <p class="muted">Заподозрян: <a href="{{ suspect.get_absolute_url }}">{{ suspect.full_name }}</a></p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include 'partials/_form.html' %}
+        <div class="form-actions">
+            <button type="submit" class="btn">{% if object %}Запази промените{% else %}Запиши алиби{% endif %}</button>
+            <a class="btn btn-ghost" href="{{ suspect.get_absolute_url }}">Отказ</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

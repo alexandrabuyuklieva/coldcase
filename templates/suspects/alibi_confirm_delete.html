@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block title %}Изтриване на алиби{% endblock %}
+
+{% block content %}
+    {% include 'partials/_confirm_delete.html' with cancel_url=object.suspect.get_absolute_url %}
+{% endblock %}

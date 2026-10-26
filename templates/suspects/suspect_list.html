@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Заподозрени{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h1>Заподозрени</h1>
+    <a class="btn" href="{% url 'suspects:create' %}">+ Нов заподозрян</a>
+</div>
+
+<form method="get" class="filter-bar">
+    {% for field in filter_form %}
+    <div class="form-row">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Филтрирай</button>
+    {% if request.GET %}<a class="btn btn-ghost" href="{% url 'suspects:list' %}">Изчисти</a>{% endif %}
+</form>
+
+<p class="muted">Намерени: {{ page_obj.paginator.count }} заподозр{{ page_obj.paginator.count|pluralize:"ян,ени" }}</p>
+
+{% if suspects %}
+<div class="card-grid">
+    {% for suspect in suspects %}
+        {% include 'partials/_suspect_card.html' %}
+    {% endfor %}
+</div>
+{% include 'partials/_pagination.html' %}
+{% elif request.GET %}
+    {% include 'partials/_empty_state.html' with message='Няма заподозрени, отговарящи на филтрите.' %}
+{% else %}
+    {% url 'suspects:create' as create_url %}
+    {% include 'partials/_empty_state.html' with message='Все още няма заподозрени.' action_url=create_url action_label='Добави първия' %}
+{% endif %}
+{% endblock %}

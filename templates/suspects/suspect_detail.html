@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ suspect.full_name }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'suspects:list' %}">&larr; Към всички заподозрени</a></p>
+
+<div class="detail-grid">
+    <article class="case-file">
+        <div class="case-tab">ЗАПОДОЗРЯН</div>
+        <div class="suspect-header">
+            {% if suspect.photo_url %}
+            <img class="avatar avatar-large" src="{{ suspect.photo_url }}" alt="{{ suspect.full_name }}">
+            {% else %}
+            <span class="avatar avatar-large avatar-initials">{{ suspect.first_name|first }}{{ suspect.last_name|first }}</span>
+            {% endif %}
+            <div>
+                <h1>{{ suspect.full_name }}</h1>
+                <p class="suspicion{% if suspect.suspicion_index %} suspicion-high{% endif %}">
+                    Индекс на подозрение: <strong>{{ suspect.suspicion_index }}</strong>
+                </p>
+            </div>
+        </div>
+
+        <dl class="detail-list">
+            <dt>Дата на раждане</dt><dd>{{ suspect.date_of_birth|date:"d E Y"|default:"неизвестна" }}</dd>
+            <dt>Добавен на</dt><dd>{{ suspect.created_at|date:"d.m.Y H:i" }}</dd>
+        </dl>
+
+        {% if suspect.description %}
+        <h2>Описание</h2>
+        <p>{{ suspect.description|linebreaksbr }}</p>
+        {% endif %}
+
+        <div class="actions">
+            <a class="btn" href="{% url 'suspects:edit' suspect.pk %}">Редактирай</a>
+            <a class="btn btn-danger" href="{% url 'suspects:delete' suspect.pk %}">Изтрий</a>
+        </div>
+
+        <section class="alibis">
+            <div class="section-header">
+                <h2>Алибита ({{ alibis|length }})</h2>
+                <a class="btn btn-small" href="{% url 'suspects:alibi-create' suspect.pk %}">+ Алиби</a>
+            </div>
+            {% if alibis %}
+            <ul class="item-list">
+                {% for alibi in alibis %}
+                <li>
+                    <strong>{{ alibi.location }}</strong>
+                    <span class="muted">· {{ alibi.starts_at|date:"d.m.Y H:i" }} – {{ alibi.ends_at|date:"d.m.Y H:i" }}</span>
+                    {% if alibi.witness %}<br><span class="muted">Свидетел: {{ alibi.witness }}</span>{% endif %}
+                    <span class="item-actions">
+                        <a href="{% url 'suspects:alibi-edit' alibi.pk %}">редактирай</a>
+                        <a href="{% url 'suspects:alibi-delete' alibi.pk %}">изтрий</a>
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">Няма записани алибита.</p>
+            {% endif %}
+        </section>
+    </article>
+
+    <aside>
+        <section class="panel">
+            <h2>Досиета ({{ cases|length }})</h2>
+            {% if cases %}
+            <ul class="item-list">
+                {% for case in cases %}
+                <li><a href="{{ case.get_absolute_url }}">{{ case.case_number }}</a> · {{ case.title }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">Не е свързан с нито едно досие.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Улики срещу него ({{ evidence_list|length }})</h2>
+            {% if evidence_list %}
+            <ul class="item-list">
+                {% for item in evidence_list %}
+                <li>
+                    <a href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+                    <span class="muted">· {{ item.case.case_number }} · {{ item.confidence }}%</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="muted">Няма улики, които да го уличават.</p>
+            {% endif %}
+        </section>
+    </aside>
+</div>
+{% endblock %}

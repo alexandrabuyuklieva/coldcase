@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block title %}Изтриване на {{ object.full_name }}{% endblock %}
+
+{% block content %}
+    {% include 'partials/_confirm_delete.html' with cancel_url=object.get_absolute_url %}
+{% endblock %}
