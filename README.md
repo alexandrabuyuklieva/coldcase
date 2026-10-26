@@ -17,7 +17,7 @@ The interface is in Bulgarian.
 - A suspect can't be removed from a case while there is evidence against them in it
 - Confirmation page before every delete, with a warning about what else will be removed
 - Success messages after every create, update and delete
-- Custom 404 page
+- Custom 404 and 500 pages
 
 ## Tech
 
@@ -88,7 +88,7 @@ All pages are reachable from the navigation bar or from links on other pages.
 - `SuspectForm` – checkbox list of cases, blocks unlinking a case with implicating evidence
 - `AlibiForm` – the suspect is excluded and set from the URL
 - `EvidenceForm` / `EvidenceEditForm` – the case can't be changed after the evidence is created
-- Filter forms for the three list pages
+- Filter forms for the three list pages, built on the shared `SortableFilterForm`
 
 All forms have custom labels, help texts, placeholders and error messages. Validation lives in:
 
@@ -96,9 +96,14 @@ All forms have custom labels, help texts, placeholders and error messages. Valid
 - model `clean()` methods – rules that depend on other objects (alibis, evidence dates)
 - form `clean_<field>()` methods – rules that only make sense in a form
 
+## Views
+
+All views are class-based. The list views share `FilteredListMixin` (`common/mixins.py`), which applies the filter form and the sorting, so each view only describes its own filters. Create, update and delete views redirect after success and show a message.
+
 ## Templates
 
 - `base.html` with a shared navbar and footer
+- `404.html` and `500.html` error pages
 - Partials in `templates/partials/` for cards, forms, messages, pagination, empty states and delete confirmation
 - Custom template tags and filters in `common/templatetags/coldcase_tags.py`:
   - `{% active_if %}` – highlights the current section in the navbar
@@ -114,7 +119,7 @@ coldcase/
 ├── cases/       case files
 ├── suspects/    suspects and alibis
 ├── evidence/    evidence for each case
-├── common/      home page, base model, validators, form mixins, template tags
+├── common/      home page, base model, validators, form and view mixins, template tags
 ├── config/      settings and root URLs
 ├── templates/   all templates, including 404.html and partials/
 └── static/      CSS

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Грешка в сървъра{% endblock %}
+
+{% block content %}
+<section class="case-file not-found">
+    <span class="stamp stamp-danger">ГРЕШКА</span>
+    <p class="error-code">500</p>
+    <h1>Нещо се обърка</h1>
+    <p class="muted">Възникна неочаквана грешка. Опитайте отново след малко.</p>
+    <div class="actions">
+        <a class="btn" href="{% url 'common:home' %}">Към началото</a>
+    </div>
+</section>
+{% endblock %}

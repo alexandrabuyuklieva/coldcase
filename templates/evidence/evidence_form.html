@@ -7,6 +7,10 @@
     <div class="case-tab">УЛИКА</div>
     <h1>{% if object %}Редакция на улика{% else %}Нова улика{% endif %}</h1>
 
+    {% if not object and not has_cases %}
+    <p class="warning">Всяка улика принадлежи на досие, а все още няма открити. <a href="{% url 'cases:create' %}">Отворете първото досие</a>.</p>
+    {% endif %}
+
     <form method="post" novalidate>
         {% csrf_token %}
         {% include 'partials/_form.html' %}
