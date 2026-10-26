@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Страницата не е намерена{% endblock %}
+
+{% block content %}
+<section class="case-file not-found">
+    <span class="stamp stamp-danger">ИЗЧЕЗНАЛО</span>
+    <p class="error-code">404</p>
+    <h1>Следата изстина</h1>
+    <p class="muted">Досието, което търсите, не съществува или е било унищожено.</p>
+    <div class="actions">
+        <a class="btn" href="{% url 'common:home' %}">Към началото</a>
+        <a class="btn btn-ghost" href="{% url 'cases:list' %}">Към досиетата</a>
+    </div>
+</section>
+{% endblock %}
