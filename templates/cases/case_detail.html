@@ -31,13 +31,17 @@
 
     <aside>
         <section class="panel">
-            <h2>Улики ({{ evidence_list|length }})</h2>
+            <div class="section-header">
+                <h2>Улики ({{ evidence_list|length }})</h2>
+                <a class="btn btn-small" href="{% url 'evidence:create' %}?case={{ case.pk }}">+ Улика</a>
+            </div>
             {% if evidence_list %}
             <ul class="item-list">
                 {% for item in evidence_list %}
                 <li>
-                    <strong>{{ item.title }}</strong>
+                    <a href="{{ item.get_absolute_url }}"><strong>{{ item.title }}</strong></a>
                     <span class="muted">· {{ item.get_evidence_type_display }} · {{ item.confidence }}%</span>
+                    {% if item.implicates %}<br><span class="muted">Уличава: {{ item.implicates.full_name }}</span>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -47,11 +51,17 @@
         </section>
 
         <section class="panel">
-            <h2>Заподозрени ({{ suspects|length }})</h2>
+            <div class="section-header">
+                <h2>Заподозрени ({{ suspects|length }})</h2>
+                <a class="btn btn-small" href="{% url 'suspects:create' %}?case={{ case.pk }}">+ Заподозрян</a>
+            </div>
             {% if suspects %}
             <ul class="item-list">
                 {% for suspect in suspects %}
-                <li>{{ suspect.full_name }}</li>
+                <li>
+                    <a href="{{ suspect.get_absolute_url }}">{{ suspect.full_name }}</a>
+                    <span class="muted">· индекс {{ suspect.suspicion_index }}</span>
+                </li>
                 {% endfor %}
             </ul>
             {% else %}

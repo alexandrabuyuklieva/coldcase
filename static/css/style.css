@@ -293,7 +293,67 @@ textarea.form-input { min-height: 120px; resize: vertical; }
 }
 .empty-icon { font-size: 2rem; margin: 0; }
 
+
+.suspect-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.suspect-card h3 { margin: 0 0 .2rem; }
+.suspect-card h3 a { color: var(--text); }
+.suspect-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: .5rem; }
+.suspect-header h1 { margin: 0; }
+.avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--folder-edge);
+    object-fit: cover;
+    filter: grayscale(1);
+}
+.avatar-large { width: 96px; height: 96px; }
+.avatar-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--folder);
+    color: var(--paper-accent);
+    font-family: var(--font-type);
+    font-size: 1.2rem;
+    filter: none;
+}
+.avatar-large.avatar-initials { font-size: 2rem; }
+.suspicion { margin: 0; font-size: .85rem; color: var(--text-muted); }
+.suspicion-high strong { color: var(--danger); }
+
+.alibis { margin-top: 2rem; }
+.item-actions { display: inline-flex; gap: .6rem; margin-left: .5rem; font-size: .8rem; }
+
+.data-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+.data-table th, .data-table td { padding: .6rem .8rem; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table th { color: var(--text-muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+.data-table tr:last-child td { border-bottom: none; }
+
+.detail-single { margin-top: 2.2rem; }
+.meter {
+    display: inline-block;
+    width: 120px;
+    height: 8px;
+    margin-right: .4rem;
+    background: var(--bg-elevated);
+    border-radius: 999px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+.meter-fill { display: block; height: 100%; background: var(--accent); }
+
 @media (max-width: 760px) {
     .detail-grid { grid-template-columns: 1fr; }
+    .data-table { display: block; overflow-x: auto; }
     h1 { font-size: 1.6rem; }
 }

@@ -55,7 +55,7 @@ class CaseDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['evidence_list'] = self.object.evidence.select_related('implicates')
-        context['suspects'] = self.object.suspects.all()
+        context['suspects'] = self.object.suspects.with_suspicion()
         return context
 
 

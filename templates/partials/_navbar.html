@@ -7,6 +7,8 @@
         <nav class="nav-links">
             <a href="{% url 'common:home' %}" {% if request.resolver_match.view_name == 'common:home' %}class="active"{% endif %}>Начало</a>
             <a href="{% url 'cases:list' %}" {% if current == 'cases' %}class="active"{% endif %}>Досиета</a>
+            <a href="{% url 'suspects:list' %}" {% if current == 'suspects' %}class="active"{% endif %}>Заподозрени</a>
+            <a href="{% url 'evidence:list' %}" {% if current == 'evidence' %}class="active"{% endif %}>Улики</a>
             <a class="btn btn-small" href="{% url 'cases:create' %}">+ Ново досие</a>
         </nav>
     </div>

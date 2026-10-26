@@ -5,4 +5,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('common.urls')),
     path('cases/', include('cases.urls')),
+    path('suspects/', include('suspects.urls')),
+    path('evidence/', include('evidence.urls')),
 ]
