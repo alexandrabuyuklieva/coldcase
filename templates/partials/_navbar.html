@@ -1,16 +1,15 @@
-{% with current=request.resolver_match.namespace %}
+{% load coldcase_tags %}
 <header class="navbar">
     <div class="container navbar-inner">
         <a class="brand" href="{% url 'common:home' %}">
             <span class="brand-mark">CC</span> Cold Case
         </a>
         <nav class="nav-links">
-            <a href="{% url 'common:home' %}" {% if request.resolver_match.view_name == 'common:home' %}class="active"{% endif %}>Начало</a>
-            <a href="{% url 'cases:list' %}" {% if current == 'cases' %}class="active"{% endif %}>Досиета</a>
-            <a href="{% url 'suspects:list' %}" {% if current == 'suspects' %}class="active"{% endif %}>Заподозрени</a>
-            <a href="{% url 'evidence:list' %}" {% if current == 'evidence' %}class="active"{% endif %}>Улики</a>
+            <a href="{% url 'common:home' %}" class="{% active_if 'common:home' %}">Начало</a>
+            <a href="{% url 'cases:list' %}" class="{% active_if 'cases' %}">Досиета</a>
+            <a href="{% url 'suspects:list' %}" class="{% active_if 'suspects' %}">Заподозрени</a>
+            <a href="{% url 'evidence:list' %}" class="{% active_if 'evidence' %}">Улики</a>
             <a class="btn btn-small" href="{% url 'cases:create' %}">+ Ново досие</a>
         </nav>
     </div>
 </header>
-{% endwith %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load coldcase_tags %}
 
 {% block title %}{{ evidence.title }}{% endblock %}
 
@@ -13,12 +14,10 @@
     <dl class="detail-list">
         <dt>Досие</dt><dd><a href="{{ evidence.case.get_absolute_url }}">{{ evidence.case }}</a></dd>
         <dt>Открита на</dt><dd>{{ evidence.collected_on|date:"d E Y" }}</dd>
+        <dt>Открита преди</dt><dd>{{ evidence.collected_on|days_since }}</dd>
         <dt>Място</dt><dd>{{ evidence.found_at|default:"няма данни" }}</dd>
         <dt>Достоверност</dt>
-        <dd>
-            <span class="meter"><span class="meter-fill" style="width: {{ evidence.confidence }}%"></span></span>
-            {{ evidence.confidence }}%
-        </dd>
+        <dd>{% confidence_meter evidence.confidence %}</dd>
         <dt>Уличава</dt>
         <dd>{% if evidence.implicates %}<a href="{{ evidence.implicates.get_absolute_url }}">{{ evidence.implicates.full_name }}</a>{% else %}никого{% endif %}</dd>
     </dl>

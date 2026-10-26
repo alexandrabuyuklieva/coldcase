@@ -1,13 +1,14 @@
+{% load coldcase_tags %}
 <article class="suspect-card">
     {% if suspect.photo_url %}
     <img class="avatar" src="{{ suspect.photo_url }}" alt="{{ suspect.full_name }}">
     {% else %}
-    <span class="avatar avatar-initials">{{ suspect.first_name|first }}{{ suspect.last_name|first }}</span>
+    <span class="avatar avatar-initials">{{ suspect|initials }}</span>
     {% endif %}
     <div>
         <h3><a href="{{ suspect.get_absolute_url }}">{{ suspect.full_name }}</a></h3>
         <p class="suspicion{% if suspect.suspicion_index %} suspicion-high{% endif %}">
-            Индекс на подозрение: <strong>{{ suspect.suspicion_index }}</strong>
+            Индекс на подозрение: <strong>{{ suspect.suspicion_index }}</strong> ({{ suspect.suspicion_index|suspicion_level }})
         </p>
     </div>
 </article>

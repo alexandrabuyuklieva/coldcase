@@ -351,6 +351,12 @@ textarea.form-input { min-height: 120px; resize: vertical; }
     vertical-align: middle;
 }
 .meter-fill { display: block; height: 100%; background: var(--accent); }
+.meter-strong .meter-fill { background: var(--success); }
+.meter-value { font-size: .85rem; color: var(--text-muted); }
+
+.not-found { max-width: 620px; margin: 3rem auto; text-align: center; }
+.not-found .error-code { margin: 0; font-family: 'Special Elite', monospace; font-size: 5rem; color: var(--accent); }
+.not-found .actions { justify-content: center; }
 
 @media (max-width: 760px) {
     .detail-grid { grid-template-columns: 1fr; }

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load coldcase_tags %}
 
 {% block title %}{{ case.case_number }}{% endblock %}
 
@@ -18,6 +19,7 @@
             <dt>Жертва</dt><dd>{{ case.victim|default:"няма данни" }}</dd>
             <dt>Открито на</dt><dd>{{ case.created_at|date:"d.m.Y H:i" }}</dd>
             <dt>Последна промяна</dt><dd>{{ case.updated_at|timesince }} назад</dd>
+            {% if case.status != 'solved' %}<dt>Неразкрит от</dt><dd>{{ case.crime_date|days_since }}</dd>{% endif %}
         </dl>
 
         <h2>Обстоятелства</h2>
@@ -60,7 +62,7 @@
                 {% for suspect in suspects %}
                 <li>
                     <a href="{{ suspect.get_absolute_url }}">{{ suspect.full_name }}</a>
-                    <span class="muted">· индекс {{ suspect.suspicion_index }}</span>
+                    <span class="muted">· индекс {{ suspect.suspicion_index }} ({{ suspect.suspicion_index|suspicion_level }})</span>
                 </li>
                 {% endfor %}
             </ul>
